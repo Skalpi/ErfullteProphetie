@@ -27,9 +27,10 @@ export const generateTheologicalInsight = async (prompt: string) => {
     - Roger Liebi betont die wörtliche Erfüllung.
     - Er nutzt mathematische Wahrscheinlichkeiten, um den göttlichen Ursprung zu beweisen.
     - Er verbindet Typologie (z.B. Opferfest) mit Prophetie.
+    - Nutze für Bibelzitate ZWINGEND die SCHLACHTER 2000 Übersetzung.
     
     Antworte edel, präzise und bibeltreu. Formatiere wichtige Bibelstellen fett.
-    Wenn der Nutzer nach spezifischen Prophezeiungen fragt, die nicht in der Liste sind, nenne diese mit Referenz (AT -> NT).
+    Wenn der Nutzer nach spezifischen Prophezeiungen fragt, die nicht in der Liste sind, nenne diese mit Referenz (AT -> NT) und Zitat.
   `;
 
   try {
@@ -38,7 +39,7 @@ export const generateTheologicalInsight = async (prompt: string) => {
       contents: prompt,
       config: {
         systemInstruction: systemInstruction,
-        thinkingConfig: { thinkingBudget: 1024 }, // Encourage thoughtful connection finding if supported, otherwise ignored by model logic
+        thinkingConfig: { thinkingBudget: 1024 },
         temperature: 0.7,
       }
     });
@@ -57,8 +58,21 @@ export const fetchMoreProphecies = async (category: string) => {
     
     const prompt = `Generiere 5 weitere spezifische biblische Prophezeiungen über Jesus Christus für die Kategorie "${category}", die NICHT in dieser Liste sind: [${existingTitles}].
     Antworte NUR im JSON Format.
+    
+    WICHTIG:
+    - Nutze für 'otText' (Altes Testament Text) und 'ntText' (Neues Testament Text) die vollständigen Verse der SCHLACHTER 2000 Übersetzung. KEINE andere Übersetzung!
+    - Die 'oldTestament' und 'newTestament' Felder sollen nur die Stellenangabe sein (z.B. "Jesaja 53,5").
+    - Die Texte müssen exakt den Wortlaut der Schlachter 2000 Bibel haben.
+    
     Schema:
-    Array von Objekten: { title: string, oldTestament: string, newTestament: string, description: string }
+    Array von Objekten: { 
+        title: string, 
+        oldTestament: string, 
+        otText: string,
+        newTestament: string, 
+        ntText: string,
+        description: string 
+    }
     `;
 
     try {
@@ -74,7 +88,9 @@ export const fetchMoreProphecies = async (category: string) => {
                         properties: {
                             title: { type: Type.STRING },
                             oldTestament: { type: Type.STRING },
+                            otText: { type: Type.STRING },
                             newTestament: { type: Type.STRING },
+                            ntText: { type: Type.STRING },
                             description: { type: Type.STRING }
                         }
                     }
